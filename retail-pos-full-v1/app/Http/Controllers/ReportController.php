@@ -1,0 +1,2 @@
+<?php namespace App\Http\Controllers; use App\Models\{Sale,Purchase,Expense,Product}; use Illuminate\Support\Facades\DB;
+class ReportController extends Controller {public function index(){ $sales=Sale::sum('total');$purchases=Purchase::sum('total');$expenses=Expense::sum('amount');$cogs=DB::table('sale_items')->sum(DB::raw('quantity*cost_price'));$gross=$sales-$cogs;$net=$gross-$expenses;$low=Product::whereColumn('current_stock','<=','minimum_stock')->count();return view('reports.index',compact('sales','purchases','expenses','cogs','gross','net','low'));}}

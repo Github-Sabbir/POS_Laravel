@@ -1,0 +1,9 @@
+ <?php $__env->startSection('content'); ?>
+<div class="page-head"><div><h1>Products</h1><p>SKU, stock, images and prices</p></div><a class="primary" href="<?php echo e(route('products.create')); ?>">＋ Add Product</a></div>
+<form class="toolbar glass"><input name="q" value="<?php echo e(request('q')); ?>" placeholder="Search name, SKU or barcode"><button>Search</button></form>
+<div class="glass table-wrap"><table><thead><tr><th>Image</th><th>Product</th><th>SKU</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead><tbody>
+<?php $__currentLoopData = $products; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $p): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><tr><td><?php if($p->image): ?><img class="thumb" src="<?php echo e(Storage::url($p->image)); ?>"><?php else: ?><span class="thumb noimg">📦</span><?php endif; ?></td><td><b><?php echo e($p->name); ?></b><small><?php echo e($p->category?->name); ?></small></td><td><?php echo e($p->sku); ?></td><td>৳<?php echo e(number_format($p->selling_price,2)); ?></td><td class="<?php echo e(($p->current_stock<=$p->minimum_stock)?'low':''); ?>"><?php echo e($p->current_stock); ?></td><td><a class="link" href="<?php echo e(route('products.edit',$p)); ?>">Edit</a><form class="inline" method="post" action="<?php echo e(route('products.destroy',$p)); ?>"><?php echo csrf_field(); ?> <?php echo method_field('DELETE'); ?><button class="danger-link">Archive</button></form></td></tr><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?></tbody></table></div><?php echo e($products->links()); ?>
+
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\retail-pos-full\resources\views/products/index.blade.php ENDPATH**/ ?>

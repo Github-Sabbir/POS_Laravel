@@ -1,0 +1,5 @@
+@extends('layouts.app') @section('content')
+<div class="page-head"><div><h1>Barcode Manager</h1><p>One product can have many globally unique barcodes.</p></div></div>
+<form class="glass form-row" method="post" action="{{route('barcodes.store')}}">@csrf<select name="product_id" required><option value="">Select product</option>@foreach($products as $p)<option value="{{$p->id}}">{{$p->name}} — {{$p->sku}}</option>@endforeach</select><input name="barcode" autofocus placeholder="Scan or type barcode" required><label class="check"><input type="checkbox" name="is_primary" value="1"> Primary</label><button class="primary">Save</button></form>
+<div class="glass table-wrap"><table><thead><tr><th>Product</th><th>Barcode</th><th>Primary</th><th></th></tr></thead><tbody>@foreach($barcodes as $b)<tr><td>{{$b->product->name}}</td><td>{{$b->barcode}}</td><td>{{$b->is_primary?'Yes':''}}</td><td><form method="post" action="{{route('barcodes.destroy',$b)}}">@csrf @method('DELETE')<button class="danger-link">Delete</button></form></td></tr>@endforeach</tbody></table></div>{{$barcodes->links()}}
+@endsection

@@ -1,0 +1,1 @@
+<?php namespace App\Models; use Illuminate\Database\Eloquent\Model; class Supplier extends Model {protected $fillable=['name','company','phone','email','address','opening_due','status']; protected $casts=['opening_due'=>'decimal:2']; public function purchases(){return $this->hasMany(Purchase::class);}}
