@@ -3,7 +3,6 @@ use App\Models\{Product,ProductBarcode,Sale,SaleItem,Customer}; use App\Services
 class PosController extends Controller {
  public function index(){return view('pos.index',['customers'=>Customer::where('status','active')->get()]);}
  public function lookup(string $query){$p=Product::with('barcodes')->where('status','active')->where(fn($q)=>$q->where('sku',$query)->orWhere('name','like',"%$query%")->orWhereHas('barcodes',fn($b)=>$b->where('barcode',$query)))->first();return response()->json($p);}
- public function search(Request $r){$q=trim((string)$r->query('q',''));if($q==='')return response()->json([]);$items=Product::with('barcodes')->where('status','active')->where(fn($x)=>$x->where('name','like',"%$q%")->orWhere('sku','like',"%$q%")->orWhereHas('barcodes',fn($b)=>$b->where('barcode','like',"%$q%")))->orderBy('name')->limit(8)->get();return response()->json($items);}
  public function checkout(Request $r,InventoryService $inv){
   $d=$r->validate(['customer_id'=>'nullable|exists:customers,id','items'=>'required|array|min:1','items.*.product_id'=>'required|integer|exists:products,id','items.*.quantity'=>'required|numeric|min:.001','items.*.price'=>'required|numeric|min:0','discount'=>'nullable|numeric|min:0','tax'=>'nullable|numeric|min:0','paid'=>'required|numeric|min:0','payment_method'=>'required|in:cash,card,mobile,other']);
   return DB::transaction(function()use($d,$r,$inv){

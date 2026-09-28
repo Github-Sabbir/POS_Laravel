@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
     {
         $permissionList = [
             ['Dashboard','dashboard.view','Dashboard'], ['POS','pos.access','POS'], ['Products','products.view','Products'], ['Manage Products','products.manage','Products'],
-            ['Categories','categories.manage','Products'], ['Brands','brands.manage','Products'], ['Barcodes','barcodes.manage','Products'], ['Purchases','purchases.manage','Purchases'], ['Sales','sales.view','Sales'], ['Returns','returns.manage','Sales'],
+            ['Barcodes','barcodes.manage','Products'], ['Purchases','purchases.manage','Purchases'], ['Sales','sales.view','Sales'], ['Returns','returns.manage','Sales'],
             ['Customers','customers.manage','Customers'], ['Suppliers','suppliers.manage','Suppliers'], ['Expenses','expenses.manage','Expenses'], ['Reports','reports.view','Reports'],
             ['Settings','settings.manage','System'], ['Users','users.view','System'], ['Manage Roles','roles.manage','System'], ['Activity Logs','activity.view','System'], ['Backup','backup.manage','System'],
         ];
@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
         $cashier = Role::updateOrCreate(['slug'=>'cashier'], ['name'=>'Cashier','description'=>'POS and customer-facing operations','is_system'=>true]);
         $sales = Role::updateOrCreate(['slug'=>'sales-staff'], ['name'=>'Sales Staff','description'=>'Sales and POS access','is_system'=>true]);
         $admin->permissions()->sync($all);
-        $manager->permissions()->sync($permissions->except(['users.view','roles.manage','settings.manage','backup.manage','activity.view'])->pluck('id')->all());
+        $manager->permissions()->sync($permissions->except(['users.view','roles.manage','settings.manage','backup.manage'])->pluck('id')->all());
         $cashier->permissions()->sync($permissions->only(['dashboard.view','pos.access','products.view','barcodes.manage','sales.view','customers.manage','returns.manage'])->pluck('id')->all());
         $sales->permissions()->sync($permissions->only(['dashboard.view','pos.access','products.view','sales.view','customers.manage'])->pluck('id')->all());
 
