@@ -1,0 +1,12 @@
+<?php
+namespace App\Http\Controllers;
+use App\Models\Expense;
+use Illuminate\Http\Request;
+class ExpenseController extends Controller {
+    public function index(){return view('expenses.index',['expenses'=>Expense::latest()->paginate(20)]);}
+    public function create(){return view('expenses.form',['expense'=>new Expense]);}
+    public function store(Request $r){$d=$r->validate(['category'=>'required|max:100','amount'=>'required|numeric|min:0.01','expense_date'=>'required|date','note'=>'nullable|string']);$d['user_id']=$r->user()->id;Expense::create($d);return redirect()->route('expenses.index')->with('success','Expense saved.');}
+    public function edit(Expense $expense){return view('expenses.form',compact('expense'));}
+    public function update(Request $r,Expense $expense){$expense->update($r->validate(['category'=>'required|max:100','amount'=>'required|numeric|min:0.01','expense_date'=>'required|date','note'=>'nullable|string']));return redirect()->route('expenses.index')->with('success','Expense updated.');}
+    public function destroy(Expense $expense){$expense->delete();return back()->with('success','Expense deleted.');}
+}

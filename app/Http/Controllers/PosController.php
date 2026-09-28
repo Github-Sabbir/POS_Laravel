@@ -1,0 +1,18 @@
+<?php namespace App\Http\Controllers;
+use App\Models\{Product,ProductBarcode,Sale,SaleItem,Customer}; use App\Services\InventoryService; use Illuminate\Http\Request; use Illuminate\Support\Facades\DB; use Illuminate\Support\Str; use RuntimeException;
+class PosController extends Controller {
+ public function index(){return view('pos.index',['customers'=>Customer::where('status','active')->get()]);}
+ public function lookup(string $query){$p=Product::with('barcodes')->where('status','active')->where(fn($q)=>$q->where('sku',$query)->orWhere('name','like',"%$query%")->orWhereHas('barcodes',fn($b)=>$b->where('barcode',$query)))->first();return response()->json($p);}
+ public function search(Request $r){$q=trim((string)$r->query('q',''));if($q==='')return response()->json([]);$items=Product::with('barcodes')->where('status','active')->where(fn($x)=>$x->where('name','like',"%$q%")->orWhere('sku','like',"%$q%")->orWhereHas('barcodes',fn($b)=>$b->where('barcode','like',"%$q%")))->orderBy('name')->limit(8)->get();return response()->json($items);}
+ public function checkout(Request $r,InventoryService $inv){
+  $d=$r->validate(['customer_id'=>'nullable|exists:customers,id','items'=>'required|array|min:1','items.*.product_id'=>'required|integer|exists:products,id','items.*.quantity'=>'required|numeric|min:.001','items.*.price'=>'required|numeric|min:0','discount'=>'nullable|numeric|min:0','tax'=>'nullable|numeric|min:0','paid'=>'required|numeric|min:0','payment_method'=>'required|in:cash,card,mobile,other']);
+  return DB::transaction(function()use($d,$r,$inv){
+   $subtotal=0;$rows=[];
+   foreach($d['items'] as $it){$p=Product::whereKey($it['product_id'])->lockForUpdate()->firstOrFail();$q=(float)$it['quantity'];if($p->current_stock<$q)throw new RuntimeException("Insufficient stock: {$p->name}");$price=(float)$it['price'];$line=$q*$price;$subtotal+=$line;$rows[]=[$p,$q,$price,$line];}
+   $discount=(float)($d['discount']??0);$tax=(float)($d['tax']??0);$total=max(0,$subtotal-$discount+$tax);$paid=(float)$d['paid'];if($paid>$total)$change=$paid-$total;else $change=0;$due=max(0,$total-$paid);
+   $sale=Sale::create(['invoice_no'=>'INV-'.now()->format('YmdHis').'-'.strtoupper(Str::random(4)),'customer_id'=>$d['customer_id']??null,'user_id'=>$r->user()->id,'subtotal'=>$subtotal,'discount'=>$discount,'tax'=>$tax,'total'=>$total,'paid'=>$paid,'due'=>$due,'change'=>$change,'payment_method'=>$d['payment_method'],'status'=>'completed']);
+   foreach($rows as [$p,$q,$price,$line]){SaleItem::create(['sale_id'=>$sale->id,'product_id'=>$p->id,'quantity'=>$q,'unit_price'=>$price,'cost_price'=>$p->purchase_price,'line_total'=>$line]);$inv->change($p,-$q,'SALE',Sale::class,$sale->id,$r->user()->id,'POS sale');}
+   return response()->json(['ok'=>true,'invoice'=>$sale->invoice_no,'total'=>$total,'change'=>$change,'due'=>$due]);
+  });
+ }
+}

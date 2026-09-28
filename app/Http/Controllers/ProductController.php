@@ -1,0 +1,35 @@
+<?php
+namespace App\Http\Controllers;
+use App\Models\{Product,Category,Brand,ActivityLog};
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+class ProductController extends Controller {
+    public function index(Request $r){
+        $query=$r->boolean('archived') ? Product::onlyTrashed() : Product::query();
+        $products=$query->with(['category','brand','barcodes'])
+            ->when($r->q,fn($q,$s)=>$q->where(fn($x)=>$x->where('name','like',"%$s%")->orWhere('sku','like',"%$s%")->orWhereHas('barcodes',fn($b)=>$b->where('barcode',$s))))
+            ->latest()->paginate(15)->withQueryString();
+        return view('products.index',compact('products'));
+    }
+    public function create(){return view('products.form',['product'=>new Product,'categories'=>Category::where('active',1)->get(),'brands'=>Brand::where('active',1)->get()]);}
+    public function store(Request $r){
+        $d=$r->validate(['name'=>'required|max:255','category_id'=>'nullable|exists:categories,id','brand_id'=>'nullable|exists:brands,id','unit'=>'required|max:50','purchase_price'=>'required|numeric|min:0','selling_price'=>'required|numeric|min:0','wholesale_price'=>'nullable|numeric|min:0','current_stock'=>'nullable|numeric|min:0','minimum_stock'=>'nullable|numeric|min:0','description'=>'nullable','status'=>'required|in:active,inactive','image'=>'nullable|file|mimes:jpg,jpeg,png,webp|max:4096']);
+        $d['sku']=$this->nextSku($d['name']);
+        if($r->hasFile('image'))$d['image']=$this->saveImage($r);
+        $p=Product::create($d);
+        ActivityLog::create(['user_id'=>$r->user()->id,'action'=>'product.create','subject_type'=>Product::class,'subject_id'=>$p->id,'ip'=>$r->ip(),'description'=>"Created {$p->sku}"]);
+        return redirect()->route('products.index')->with('success',"Product {$p->sku} created.");
+    }
+    public function edit(Product $product){return view('products.form',['product'=>$product,'categories'=>Category::where('active',1)->get(),'brands'=>Brand::where('active',1)->get()]);}
+    public function update(Request $r,Product $product){
+        $d=$r->validate(['name'=>'required|max:255','category_id'=>'nullable|exists:categories,id','brand_id'=>'nullable|exists:brands,id','unit'=>'required|max:50','purchase_price'=>'required|numeric|min:0','selling_price'=>'required|numeric|min:0','wholesale_price'=>'nullable|numeric|min:0','minimum_stock'=>'nullable|numeric|min:0','description'=>'nullable','status'=>'required|in:active,inactive','image'=>'nullable|file|mimes:jpg,jpeg,png,webp|max:4096']);
+        if($r->hasFile('image')){if($product->image)Storage::disk('public')->delete($product->image);$d['image']=$this->saveImage($r);}
+        $product->update($d);return redirect()->route('products.index')->with('success','Product updated. SKU remains unchanged.');
+    }
+    public function destroy(Product $product){$product->delete();return back()->with('success','Product archived.');}
+    public function restore(int $product){$p=Product::withTrashed()->findOrFail($product);$p->restore();$p->update(['status'=>'active']);return redirect()->route('products.index',['archived'=>1])->with('success','Product restored to active products.');}
+    public function image(Request $r,Product $p){$r->validate(['image'=>'required|file|mimes:jpg,jpeg,png,webp|max:4096']);if($p->image)Storage::disk('public')->delete($p->image);$p->update(['image'=>$this->saveImage($r)]);return back()->with('success','Image updated.');}
+    public function removeImage(Product $p){if($p->image)Storage::disk('public')->delete($p->image);$p->update(['image'=>null]);return back()->with('success','Image removed.');}
+    private function saveImage(Request $r){return $r->file('image')->store('products','public');}
+    private function nextSku(string $name){$prefix=strtoupper(substr(preg_replace('/[^A-Za-z]/','',$name),0,3)?:'PRD');$n=(int)(Product::withTrashed()->max('id')??0)+1;do{$sku=sprintf('%s-%06d',$prefix,$n++);}while(Product::withTrashed()->where('sku',$sku)->exists());return $sku;}
+}
