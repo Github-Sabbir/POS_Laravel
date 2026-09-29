@@ -1,1 +1,14 @@
-<?php namespace App\Models; use Illuminate\Database\Eloquent\Model; class StockMovement extends Model {protected $fillable=['product_id','quantity','previous_stock','new_stock','movement_type','reference_type','reference_id','user_id','description']; protected $casts=['quantity'=>'decimal:3','previous_stock'=>'decimal:3','new_stock'=>'decimal:3']; public function product(){return $this->belongsTo(Product::class);} }
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+class StockMovement extends Model
+{
+    protected $fillable = ['product_id', 'quantity', 'previous_stock', 'new_stock', 'movement_type', 'reference_type', 'reference_id', 'user_id', 'description'];
+    protected $casts = ['quantity' => 'decimal:3', 'previous_stock' => 'decimal:3', 'new_stock' => 'decimal:3'];
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+}

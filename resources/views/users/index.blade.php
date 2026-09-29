@@ -1,3 +1,6 @@
+<?php
+
+?>
 @extends('layouts.app')
 @section('content')
 <div class="page-head"><div><div class="eyebrow">ACCESS CONTROL</div><h1>User Management</h1><p class="muted">Create staff accounts and assign roles.</p></div><a class="primary" href="{{route('users.create')}}">+ Add User</a></div>
@@ -7,3 +10,4 @@
 <div class="page-head compact"><div><div class="eyebrow">ROLES</div><h2>Roles & Permissions</h2></div><a class="secondary" href="{{route('roles.index')}}">Manage Roles</a></div>
 <div class="role-grid">@foreach($roles as $role)<div class="glass mini-card"><div class="role-title"><strong>{{$role->name}}</strong><span class="pill">{{$role->users()->count()}} users</span></div><p class="muted">{{$role->description ?: 'Access profile'}}</p><div class="chips">@foreach($role->permissions->take(5) as $p)<span>{{$p->name}}</span>@endforeach @if($role->permissions->count()>5)<span>+{{$role->permissions->count()-5}} more</span>@endif</div></div>@endforeach</div>
 @endsection
+<?php 

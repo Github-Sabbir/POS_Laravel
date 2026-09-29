@@ -1,5 +1,9 @@
+<?php
+
+?>
 @extends('layouts.app') @section('content')
 <div class="pos-shell"><section class="glass pos-products"><div class="pos-head"><div><h1>Point of Sale</h1><p>Fast checkout · barcode or product search</p></div><input id="scan" class="scan" autofocus placeholder="⌕  Scan barcode / search product..." onkeydown="if(event.key==='Enter'){lookupPOS()}"></div><div id="product-grid" class="product-grid"></div></section>
 <section class="glass cart-panel"><div class="cart-head"><div><h2 style="margin:0">Current Sale</h2><small class="muted">Live cart</small></div><span class="cart-badge" id="cart-count">0 items</span></div><div id="cart"></div><div class="summary"><div>Subtotal <b id="subtotal">৳0.00</b></div><div>Discount <input id="discount" type="number" step=".01" value="0" oninput="renderCart()"></div><div>Tax <input id="tax" type="number" step=".01" value="0" oninput="renderCart()"></div><div class="grand">Total <b id="grand">৳0.00</b></div><label>Customer<select id="customer"><option value="">Walk-in</option>@foreach($customers as $c)<option value="{{$c->id}}">{{$c->name}} — {{$c->phone}}</option>@endforeach</select></label><label>Payment<select id="payment"><option value="cash">Cash</option><option value="card">Card</option><option value="mobile">Mobile banking</option><option value="other">Other</option></select></label><label>Paid<input id="paid" type="number" step=".01" value="0"></label><button class="primary wide" onclick="checkoutPOS()">Pay & Complete Sale</button><button class="secondary wide" onclick="clearCart()">Clear Cart</button></div></section></div>
 @endsection
-@push('scripts')<script>window.POS={lookup:"{{url('/pos/product')}}",storage:"{{asset('storage')}}",checkout:"{{route('pos.checkout')}}",csrf:"{{csrf_token()}}"}</script>@endpush
+@push('scripts')<script>window.POS={lookup:"{{url('/pos/product')}}",storage:"{{asset('storage')}}",checkout:"{{route('pos.checkout')}}",receiptBase:"{{url('/sales')}}",csrf:"{{csrf_token()}}"}</script>@endpush
+<?php 

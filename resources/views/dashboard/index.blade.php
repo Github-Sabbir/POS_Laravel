@@ -1,5 +1,21 @@
-@extends('layouts.app') @section('content')
-<div class="page-head"><div><h1>Good day, {{auth()->user()->name}} 👋</h1><p>Here is your store overview for today.</p></div><a class="primary" href="{{route('pos')}}">＋ Open POS</a></div>
-<div class="stats"><div class="stat"><div class="stat-top"><span>Today's Sales</span><span class="stat-icon">↗</span></div><b>৳{{number_format($sales,2)}}</b><small>Revenue collected today</small></div><div class="stat"><div class="stat-top"><span>Purchases</span><span class="stat-icon">◆</span></div><b>৳{{number_format($purchases,2)}}</b><small>Today's buying cost</small></div><div class="stat"><div class="stat-top"><span>Expenses</span><span class="stat-icon">−</span></div><b>৳{{number_format($expenses,2)}}</b><small>Recorded operating expense</small></div><div class="stat"><div class="stat-top"><span>Gross Profit</span><span class="stat-icon">✓</span></div><b>৳{{number_format($sales-$cogs,2)}}</b><small>Sales minus product cost</small></div></div>
-<div class="dashboard-grid"><div class="glass card chart-card"><div style="display:flex;justify-content:space-between;align-items:center"><div><h2 style="margin-bottom:4px">Sales activity</h2><p class="muted" style="margin:0">Visual overview · dashboard preview</p></div><span class="cart-badge">Today</span></div><div class="chart-bars">@foreach([42,58,47,72,61,84,68,91,77,64,82,96] as $h)<div class="chart-bar" style="height:{{$h}}%"></div>@endforeach</div><div class="chart-labels"><span>8AM</span><span>10AM</span><span>12PM</span><span>2PM</span><span>4PM</span><span>6PM</span><span>8PM</span></div></div><div class="glass card"><h2>Quick actions</h2><p class="muted">Jump directly into common tasks.</p><div class="quick"><a href="{{route('products.create')}}">＋ Product</a><a href="{{route('purchases.create')}}">＋ Purchase</a><a href="{{route('customers.create')}}">＋ Customer</a><a href="{{route('expenses.create')}}">＋ Expense</a></div><div style="margin-top:18px" class="mini-list"><div class="mini-row"><span>POS Terminal</span><a class="link" href="{{route('pos')}}">Open →</a></div><div class="mini-row"><span>Reports</span><a class="link" href="{{route('reports')}}">View →</a></div></div></div></div>
+<?php
+
+?>
+@extends('layouts.app')
+@section('content')
+<div class="page-head"><div><div class="eyebrow">STORE OVERVIEW</div><h1>Good day, {{ auth()->user()->name }} 👋</h1><p class="muted">Here is your store overview for today.</p></div><a class="primary" href="{{ route('pos') }}">＋ Open POS</a></div>
+<div class="stats">
+    <div class="stat"><div class="stat-top"><span>Today's Sales</span><span class="stat-icon">↗</span></div><b>৳{{ number_format($sales,2) }}</b><small>{{ $transactions }} completed transactions</small></div>
+    <div class="stat"><div class="stat-top"><span>Returns</span><span class="stat-icon">↩</span></div><b>৳{{ number_format($returns,2) }}</b><small>Today's refund value</small></div>
+    <div class="stat"><div class="stat-top"><span>Low Stock</span><span class="stat-icon">!</span></div><b>{{ $lowStock }}</b><small>Products at/below minimum</small></div>
+    @if($canSeeFinance)
+    <div class="stat"><div class="stat-top"><span>Net Profit</span><span class="stat-icon">✓</span></div><b>৳{{ number_format($netProfit,2) }}</b><small>Finance view · gross profit less expenses</small></div>
+    @endif
+</div>
+@if($canSeeFinance)
+<div class="glass finance-strip"><span>Purchases <b>৳{{ number_format($purchases,2) }}</b></span><span>COGS <b>৳{{ number_format($cogs,2) }}</b></span><span>Expenses <b>৳{{ number_format($expenses,2) }}</b></span><span>Gross Profit <b>৳{{ number_format($grossProfit,2) }}</b></span></div>
+@endif
+<div class="dashboard-grid"><div class="glass card chart-card"><div class="section-head"><div><h2>Sales activity</h2><p class="muted">Visual overview · dashboard preview</p></div><span class="cart-badge">Today</span></div><div class="chart-bars">@foreach([42,58,47,72,61,84,68,91,77,64,82,96] as $h)<div class="chart-bar" style="height:{{$h}}%"></div>@endforeach</div><div class="chart-labels"><span>8AM</span><span>10AM</span><span>12PM</span><span>2PM</span><span>4PM</span><span>6PM</span><span>8PM</span></div></div>
+<div class="glass card"><h2>Quick actions</h2><p class="muted">Jump directly into common tasks.</p><div class="quick"><a href="{{route('pos')}}">Open POS</a>@if(auth()->user()->hasPermission('products.view'))<a href="{{route('products.create')}}">＋ Product</a>@endif @if(auth()->user()->hasPermission('customers.create'))<a href="{{route('customers.create')}}">＋ Customer</a>@endif @if(auth()->user()->hasPermission('expenses.create'))<a href="{{route('expenses.create')}}">＋ Expense</a>@endif</div><div style="margin-top:18px" class="mini-list">@if($canSeeFinance)<div class="mini-row"><span>Reports</span><a class="link" href="{{route('reports')}}">View →</a></div>@endif @if(auth()->user()->hasPermission('returns.view'))<div class="mini-row"><span>Sales Returns</span><a class="link" href="{{route('returns.index')}}">Open →</a></div>@endif</div></div></div>
 @endsection
+<?php 

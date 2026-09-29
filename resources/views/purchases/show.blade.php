@@ -1,3 +1,6 @@
+<?php
+
+?>
 @extends('layouts.app')
 @section('content')
 <div class="page-head"><div><h1>Purchase {{ $purchase->reference_no }}</h1><p>Purchase details and stock received.</p></div><a class="secondary" href="{{ route('purchases.index') }}">Back</a></div>
@@ -6,3 +9,4 @@
 @foreach($purchase->items as $item)<tr><td>{{ $item->product?->name }}</td><td>{{ $item->quantity }}</td><td>৳{{ number_format($item->unit_cost,2) }}</td><td>৳{{ number_format($item->line_total,2) }}</td></tr>@endforeach
 </tbody></table></div>
 @endsection
+<?php 

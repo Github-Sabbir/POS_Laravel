@@ -1,1 +1,4 @@
-@extends('layouts.app') @section('content')<h1>Sales Returns</h1><form class="glass form-grid" method="post" action="{{route('returns.store')}}">@csrf<label>Invoice No<input name="invoice_no" required></label><label>Product ID<input name="product_id" type="number" required></label><label>Return Quantity<input name="quantity" type="number" step=".001" required></label><button class="primary">Process Return</button></form><p class="muted">For production, add invoice/product selectors and a dedicated return_items ledger.</p>@endsection
+<?php
+
+?>
+@extends('layouts.app') @section('content')<h1>Sales Returns</h1><form class="glass form-grid" method="post" action="{{route('returns.store')}}">@csrf<label>Invoice No<input name="invoice_no" required></label><label>Product ID<input name="product_id" type="number" required></label><label>Return Quantity<input name="quantity" type="number" step=".001" required></label><button class="primary">Process Return</button></form><p class="muted">For production, add invoice/product selectors and a dedicated return_items ledger.</p>@endsection<?php 

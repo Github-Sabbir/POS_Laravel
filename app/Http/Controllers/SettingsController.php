@@ -1,2 +1,20 @@
-<?php namespace App\Http\Controllers; use App\Models\Setting; use Illuminate\Http\Request;
-class SettingsController extends Controller {public function index(){return view('settings.index',['settings'=>Setting::pluck('value','key')]);} public function update(Request $r){foreach($r->except('_token') as $k=>$v)Setting::updateOrCreate(['key'=>$k],['value'=>$v]);return back()->with('success','Settings saved.');}}
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Setting;
+use Illuminate\Http\Request;
+class SettingsController extends Controller
+{
+    public function index()
+    {
+        return view('settings.index', ['settings' => Setting::pluck('value', 'key')]);
+    }
+    public function update(Request $r)
+    {
+        foreach ($r->except('_token') as $k => $v) {
+            Setting::updateOrCreate(['key' => $k], ['value' => $v]);
+        }
+        return back()->with('success', 'Settings saved.');
+    }
+}
