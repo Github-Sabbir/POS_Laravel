@@ -80,6 +80,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:settings.manage')->group(function () {
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
         Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
+        Route::post('/settings/logo/remove', [SettingsController::class, 'removeLogo'])->name('settings.logo.remove');
     });
     Route::middleware('permission:users.view')->get('/users', [UserManagementController::class, 'index'])->name('users.index');
     Route::middleware('permission:users.create')->group(function () {

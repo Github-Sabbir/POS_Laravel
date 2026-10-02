@@ -1,6 +1,3 @@
-<?php
-
-?>
 @extends('layouts.app')
 @section('content')
 <div class="page-head"><div><div class="eyebrow">PRODUCT IDENTIFICATION</div><h1>Barcode Manager</h1><p class="muted">Attach multiple unique barcodes to a product, choose one primary barcode, generate internal codes and print labels.</p></div></div>
@@ -24,7 +21,7 @@
 <form class="glass toolbar" method="get"><input name="q" value="{{ $search }}" placeholder="Search product, SKU or barcode..."><button class="primary" type="submit">Search</button>@if($search)<a class="secondary" href="{{route('barcodes.index')}}">Clear</a>@endif</form>
 
 <div class="glass table-wrap"><table><thead><tr><th>Product</th><th>SKU</th><th>Barcode</th><th>Primary</th><th>Actions</th></tr></thead><tbody>
-@forelse($barcodes as $b)<tr><td><b>{{ $b->product->name }}</b></td><td>{{ $b->product->sku }}</td><td><code>{{ $b->barcode }}</code></td><td>@if($b->is_primary)<span class="status ok">Primary</span>@else<span class="status">Secondary</span>@endif</td><td><div class="actions">@unless($b->is_primary)<form method="post" action="{{route('barcodes.primary',$b)}}">@csrf<button class="secondary" type="submit">Make Primary</button></form>@endunless<form method="post" action="{{route('barcodes.destroy',$b)}}">@csrf @method('DELETE')<button class="danger" type="submit" onclick="return confirm('Delete this barcode?')">Delete</button></form><button class="secondary" type="button" onclick="printBarcode('{{addslashes($b->barcode)}}','{{addslashes($b->product->name)}}')">Print</button></div></td></tr>@empty<tr><td colspan="5" class="empty">No barcodes found.</td></tr>@endforelse
+@forelse($barcodes as $b) @php($product = $b->product) <tr><td><b>{{ $product?->name ?? 'Unknown product' }}</b>@if($product?->trashed()) <span class="status off">Archived</span>@endif</td><td>{{ $product?->sku ?? '—' }}</td><td><code>{{ $b->barcode }}</code></td><td>@if($b->is_primary)<span class="status ok">Primary</span>@else<span class="status">Secondary</span>@endif</td><td><div class="actions">@unless($b->is_primary)<form method="post" action="{{route('barcodes.primary',$b)}}">@csrf<button class="secondary" type="submit">Make Primary</button></form>@endunless<form method="post" action="{{route('barcodes.destroy',$b)}}">@csrf @method('DELETE')<button class="danger" type="submit" onclick="return confirm('Delete this barcode?')">Delete</button></form><button class="secondary" type="button" onclick="printBarcode('{{addslashes($b->barcode)}}','{{addslashes($product?->name ?? 'Unknown product')}}')">Print</button></div></td></tr>@empty<tr><td colspan="5" class="empty">No barcodes found.</td></tr>@endforelse
 </tbody></table></div>
 {{ $barcodes->links() }}
 @endsection

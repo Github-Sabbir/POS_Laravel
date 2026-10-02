@@ -19,11 +19,21 @@ class PurchaseController extends Controller
     }
     public function store(Request $r, InventoryService $inv)
     {
-        $d = $r->validate(['supplier_id' => 'nullable|exists:suppliers,id', 'items' => 'required|array|min:1', 'items.*.product_id' => 'required|exists:products,id', 'items.*.quantity' => 'required|numeric|min:.001', 'items.*.unit_cost' => 'required|numeric|min:0', 'paid' => 'required|numeric|min:0']);
-        return DB::transaction(function () use ($d, $r, $inv) {
-            $sub = collect($d['items'])->sum(fn($x) => $x['quantity'] * $x['unit_cost']);
-            $total = $sub;
-            $paid = $d['paid'];
+        $d = $r->validate([
+            'supplier_id' => 'nullable|exists:suppliers,id',
+            'items' => 'required|array|min:1',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.quantity' => 'required|numeric|min:.001',
+            'items.*.unit_cost' => 'required|numeric|min:0',
+            'paid' => 'required|numeric|min:0',
+        ]);
+        $sub = collect($d['items'])->sum(fn($x) => (float)$x['quantity'] * (float)$x['unit_cost']);
+        $total = round($sub, 2);
+        $paid = round((float)$d['paid'], 2);
+        if ($paid > $total) {
+            return back()->withInput()->withErrors(['paid' => 'Paid amount cannot be greater than the purchase total.']);
+        }
+        return DB::transaction(function () use ($d, $r, $inv, $sub, $total, $paid) {
             $p = Purchase::create(['reference_no' => 'PUR-' . now()->format('YmdHis') . '-' . Str::upper(Str::random(3)), 'supplier_id' => $d['supplier_id'] ?? null, 'user_id' => $r->user()->id, 'subtotal' => $sub, 'total' => $total, 'paid' => $paid, 'due' => max(0, $total - $paid), 'status' => 'received']);
             foreach ($d['items'] as $it) {
                 $prod = Product::whereKey($it['product_id'])->lockForUpdate()->firstOrFail();

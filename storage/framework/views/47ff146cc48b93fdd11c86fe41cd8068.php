@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Login · Retail POS</title>
-<link rel="stylesheet" href="{{ asset('css/pos.css') }}">
+<link rel="stylesheet" href="<?php echo e(asset('css/pos.css')); ?>">
 </head>
 <body class="login login-animated-page">
 <div class="cursor-dot" aria-hidden="true"></div><div class="cursor-ring" aria-hidden="true"></div>
@@ -24,15 +24,15 @@
             <h1>Login</h1>
             <p class="login-subtitle">Sign in to continue to your workspace</p>
 
-            @if($errors->any())
-                <div class="login-error" role="alert">{{ $errors->first() }}</div>
-            @endif
+            <?php if($errors->any()): ?>
+                <div class="login-error" role="alert"><?php echo e($errors->first()); ?></div>
+            <?php endif; ?>
 
-            <form method="post" action="{{ route('login.store') }}" autocomplete="on" class="animated-login-form">
-                @csrf
+            <form method="post" action="<?php echo e(route('login.store')); ?>" autocomplete="on" class="animated-login-form">
+                <?php echo csrf_field(); ?>
                 <label class="animated-field">
                     <span class="sr-only">Username or email</span>
-                    <input type="email" name="email" value="{{ old('email') }}" autocomplete="username" placeholder="Username" required autofocus>
+                    <input type="email" name="email" value="<?php echo e(old('email')); ?>" autocomplete="username" placeholder="Username" required autofocus>
                 </label>
                 <label class="animated-field">
                     <span class="sr-only">Password</span>
@@ -44,6 +44,7 @@
         </div>
     </section>
 </main>
-<script src="{{ asset('js/pos.js') }}"></script>
+<script src="<?php echo e(asset('js/pos.js')); ?>"></script>
 </body>
 </html>
+<?php /**PATH C:\Users\Dell_Inspiron\Desktop\New folder\resources\views/auth/login.blade.php ENDPATH**/ ?>

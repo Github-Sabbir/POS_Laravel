@@ -12,18 +12,40 @@ class PosController extends Controller
 {
     public function index()
     {
-        return view('pos.index', ['customers' => Customer::where('status', 'active')->get()]);
+        return view('pos.index', [
+            'customers' => Customer::where('status', 'active')->orderBy('name')->get(),
+            'products' => Product::with('barcodes')->where('status', 'active')->orderBy('name')->limit(200)->get(),
+        ]);
     }
     public function receipt(Sale $sale)
     {
         $sale->load(['items.product', 'customer', 'user']);
         $receiptWidth = Setting::where('key', 'receipt_width')->value('value') ?: '80mm';
-        return view('sales.receipt', compact('sale', 'receiptWidth'));
+        $shopName = Setting::where('key', 'shop_name')->value('value') ?: 'Retail POS';
+        $logoPath = Setting::where('key', 'logo_path')->value('value');
+        return view('sales.receipt', compact('sale', 'receiptWidth', 'shopName', 'logoPath'));
     }
     public function lookup(string $query)
     {
-        $p = Product::with('barcodes')->where('status', 'active')->where(fn($q) => $q->where('sku', $query)->orWhere('name', 'like', "%{$query}%")->orWhereHas('barcodes', fn($b) => $b->where('barcode', $query)))->first();
-        return response()->json($p);
+        $query = trim($query);
+        $exact = Product::with('barcodes')
+            ->where('status', 'active')
+            ->where(fn($q) => $q->where('sku', $query)->orWhereHas('barcodes', fn($b) => $b->where('barcode', $query)))
+            ->first();
+
+        $suggestions = Product::with('barcodes')
+            ->where('status', 'active')
+            ->where(fn($q) => $q->where('name', 'like', "%{$query}%")
+                ->orWhere('sku', 'like', "%{$query}%")
+                ->orWhereHas('barcodes', fn($b) => $b->where('barcode', 'like', "%{$query}%")))
+            ->orderBy('name')
+            ->limit(12)
+            ->get();
+
+        return response()->json([
+            'product' => $exact,
+            'suggestions' => $suggestions,
+        ]);
     }
     public function checkout(Request $r, InventoryService $inv)
     {

@@ -1,6 +1,3 @@
-<?php
-
-?>
 @extends('layouts.app')
 @section('content')
 <div class="page-head"><div><h1>Purchase {{ $purchase->reference_no }}</h1><p>Purchase details and stock received.</p></div><a class="secondary" href="{{ route('purchases.index') }}">Back</a></div>

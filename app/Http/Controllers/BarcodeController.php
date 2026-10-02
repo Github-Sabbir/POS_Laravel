@@ -10,14 +10,16 @@ class BarcodeController extends Controller
     public function index(Request $request)
     {
         $search = trim((string) $request->input('q'));
-        $products = Product::where('status', 'active')->when($search, fn($q) => $q->where('name', 'like', "%{$search}%")->orWhere('sku', 'like', "%{$search}%"))->orderBy('name')->limit(200)->get();
-        $barcodes = ProductBarcode::with('product')->when($search, fn($q) => $q->where('barcode', 'like', "%{$search}%")->orWhereHas('product', fn($p) => $p->where('name', 'like', "%{$search}%")->orWhere('sku', 'like', "%{$search}%")))->latest()->paginate(30)->withQueryString();
+        $products = Product::where('status', 'active')->when($search, fn($q) => $q->where(function ($sub) use ($search) { $sub->where('name', 'like', "%{$search}%")->orWhere('sku', 'like', "%{$search}%"); }))->orderBy('name')->limit(200)->get();
+        $barcodes = ProductBarcode::with('product')->when($search, fn($q) => $q->where(function ($sub) use ($search) { $sub->where('barcode', 'like', "%{$search}%")->orWhereHas('product', fn($p) => $p->withTrashed()->where(function ($product) use ($search) { $product->where('name', 'like', "%{$search}%")->orWhere('sku', 'like', "%{$search}%"); })); }))->latest()->paginate(30)->withQueryString();
         return view('products.barcodes', compact('products', 'barcodes', 'search'));
     }
     public function store(Request $request)
     {
         $data = $request->validate(['product_id' => 'required|exists:products,id', 'barcode' => 'required|string|max:100|unique:product_barcodes,barcode', 'is_primary' => 'nullable|boolean']);
-        if ($request->boolean('is_primary')) {
+        $hasBarcode = ProductBarcode::where('product_id', $data['product_id'])->exists();
+        $data['is_primary'] = $request->boolean('is_primary') || !$hasBarcode;
+        if ($data['is_primary']) {
             ProductBarcode::where('product_id', $data['product_id'])->update(['is_primary' => false]);
         }
         ProductBarcode::create($data);
@@ -45,6 +47,9 @@ class BarcodeController extends Controller
     {
         if ($barcode->is_primary && ProductBarcode::where('product_id', $barcode->product_id)->count() > 1) {
             return back()->withErrors(['barcode' => 'Set another barcode as primary before deleting this one.']);
+        }
+        if (ProductBarcode::where('product_id', $barcode->product_id)->count() === 1 && $barcode->is_primary) {
+            return back()->withErrors(['barcode' => 'A product must keep at least one barcode. Add another barcode before deleting the primary one.']);
         }
         $barcode->delete();
         return back()->with('success', 'Barcode deleted.');

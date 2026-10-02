@@ -1,6 +1,3 @@
-<?php
-
-?>
 @extends('layouts.app')
 @section('content')
 <div class="page-head"><div><div class="eyebrow">ACCESS CONTROL</div><h1>User Management</h1><p class="muted">Create staff accounts and assign roles.</p></div><a class="primary" href="{{route('users.create')}}">+ Add User</a></div>

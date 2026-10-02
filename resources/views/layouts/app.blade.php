@@ -1,6 +1,3 @@
-<?php
-
-?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -10,8 +7,17 @@
     <link rel="stylesheet" href="{{ asset('css/pos.css') }}">
 </head>
 <body>
+<div class="cursor-dot" aria-hidden="true"></div><div class="cursor-ring" aria-hidden="true"></div>
 <aside class="sidebar">
-    <div class="brand"><span class="brand-mark">R</span><span>Retail POS</span></div>
+    <div class="brand">
+        @php($logoPath = \App\Models\Setting::where('key', 'logo_path')->value('value'))
+        @if($logoPath)
+            <img class="brand-logo" src="{{ asset('storage/'.$logoPath) }}" alt="Logo">
+        @else
+            <span class="brand-mark">R</span>
+        @endif
+        <span>{{ \App\Models\Setting::where('key', 'shop_name')->value('value') ?: 'Retail POS' }}</span>
+    </div>
     <div class="sidebar-label">Workspace</div>
     <nav>
         <a class="{{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}"><span class="nav-icon">⌂</span>Dashboard</a>
@@ -39,4 +45,4 @@
 <script src="{{ asset('js/pos.js') }}"></script>
 @stack('scripts')
 </body>
-</html><?php 
+</html>

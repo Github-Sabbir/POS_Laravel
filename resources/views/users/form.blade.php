@@ -1,6 +1,3 @@
-<?php
-
-?>
 @extends('layouts.app')
 @section('content')
 <div class="page-head"><div><div class="eyebrow">USER ACCOUNT</div><h1>{{$user->exists?'Edit User':'Add User'}}</h1></div><a class="secondary" href="{{route('users.index')}}">← Back</a></div>
