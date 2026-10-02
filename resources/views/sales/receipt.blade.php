@@ -36,4 +36,3 @@
     <div class="center no-print"><button onclick="window.print()">Print Receipt</button><button onclick="window.close()">Close</button></div>
 </div>
 </body></html>
-<?php 

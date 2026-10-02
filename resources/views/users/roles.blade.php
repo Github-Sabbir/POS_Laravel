@@ -35,4 +35,3 @@ function toggleAll(form,state){form.querySelectorAll('input[name="permissions[]"
 function toggleGroup(button,state){const group=button.closest('.permission-group');group.querySelectorAll('input[name="permissions[]"]').forEach(i=>i.checked=state)}
 </script>
 @endpush
-<?php 

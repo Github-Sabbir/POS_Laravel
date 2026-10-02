@@ -9,4 +9,3 @@
 @foreach($purchase->items as $item)<tr><td>{{ $item->product?->name }}</td><td>{{ $item->quantity }}</td><td>৳{{ number_format($item->unit_cost,2) }}</td><td>৳{{ number_format($item->line_total,2) }}</td></tr>@endforeach
 </tbody></table></div>
 @endsection
-<?php 

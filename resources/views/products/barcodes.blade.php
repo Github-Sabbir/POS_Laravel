@@ -33,4 +33,3 @@
 function printBarcode(code,name){const w=window.open('','barcode','width=420,height=420');if(!w)return;w.document.write('<!doctype html><html><head><title>Barcode '+code+'</title><style>@page{size:58mm 30mm;margin:0}body{font-family:Arial;text-align:center;padding:5mm}.name{font-size:12px;font-weight:bold}.code{font-family:monospace;font-size:18px;letter-spacing:2px;margin-top:8px}</style></head><body><div class="name">'+name.replace(/</g,'&lt;')+'</div><div class="code">'+code+'</div><script>setTimeout(()=>window.print(),200)<\\/script></body></html>');w.document.close();}
 </script>
 @endpush
-<?php 
