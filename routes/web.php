@@ -16,6 +16,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\BackupController;
+use App\Http\Controllers\SalesHistoryController;
 Route::get('/', fn() => redirect()->route('dashboard'));
 Route::get('/login', [AuthController::class, 'show'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.store');
@@ -80,11 +81,13 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:returns.view')->get('/returns/sale/{invoice}', [ReturnController::class, 'lookup'])->name('returns.lookup');
     Route::middleware('permission:returns.create')->post('/returns', [ReturnController::class, 'store'])->name('returns.store');
     Route::middleware('permission:receipts.print')->get('/sales/{sale}/receipt', [PosController::class, 'receipt'])->name('sales.receipt');
+    Route::get('/sales-history', [SalesHistoryController::class, 'index'])->name('sales.history');
     Route::middleware('permission:settings.manage')->group(function () {
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
         Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
         Route::post('/settings/logo/remove', [SettingsController::class, 'removeLogo'])->name('settings.logo.remove');
         Route::get('/settings/backup', [BackupController::class, 'download'])->middleware('permission:backup.manage')->name('settings.backup.download');
+        Route::post('/settings/backup/restore', [BackupController::class, 'restore'])->middleware('permission:backup.manage')->name('settings.backup.restore');
     });
     Route::middleware('permission:users.view')->get('/users', [UserManagementController::class, 'index'])->name('users.index');
     Route::middleware('permission:users.create')->group(function () {

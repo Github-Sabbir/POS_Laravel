@@ -55,4 +55,32 @@ class BackupController extends Controller
             echo "SET FOREIGN_KEY_CHECKS=1;\n";
         }, $filename, ['Content-Type' => 'application/sql; charset=UTF-8']);
     }
+    public function restore(\Illuminate\Http\Request $request): \Illuminate\Http\RedirectResponse
+    {
+        abort_unless($request->user()?->role === 'admin', 403);
+
+        $data = $request->validate([
+            'backup' => 'required|file|extensions:sql,txt|max:51200',
+        ]);
+
+        $sql = file_get_contents($data['backup']->getRealPath());
+        if ($sql === false || trim($sql) === '') {
+            return back()->withErrors(['backup' => 'The backup file is empty or could not be read.']);
+        }
+
+        // This application generates plain MySQL dumps. Restore is intentionally
+        // restricted to Admin because it can replace the whole database.
+        try {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0');
+            DB::unprepared($sql);
+            DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        } catch (\Throwable $e) {
+            try { DB::statement('SET FOREIGN_KEY_CHECKS=1'); } catch (\Throwable $ignored) {}
+            report($e);
+            return back()->withErrors(['backup' => 'Backup restore failed. Please verify that this is a Retail POS MySQL .sql backup.']);
+        }
+
+        return back()->with('success', 'Database backup restored successfully. Please refresh the application.');
+    }
+
 }

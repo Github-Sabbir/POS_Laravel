@@ -29,6 +29,7 @@
         @if(auth()->user()->hasPermission('suppliers.view'))<a class="{{ request()->routeIs('suppliers.*') ? 'active' : '' }}" href="{{ route('suppliers.index') }}"><span class="nav-icon">◇</span>Suppliers</a>@endif
         @if(auth()->user()->hasPermission('expenses.view'))<a class="{{ request()->routeIs('expenses.*') ? 'active' : '' }}" href="{{ route('expenses.index') }}"><span class="nav-icon">−</span>Expenses</a>@endif
         @if(auth()->user()->hasPermission('reports.view'))<a class="{{ request()->routeIs('reports') ? 'active' : '' }}" href="{{ route('reports') }}"><span class="nav-icon">◫</span>Reports</a>@endif
+        @if(in_array(auth()->user()->role, ['admin','manager'], true))<a class="{{ request()->routeIs('sales.history') ? 'active' : '' }}" href="{{ route('sales.history') }}"><span class="nav-icon">▤</span>Sales History</a>@endif
         @if(auth()->user()->hasPermission('returns.view'))<a class="{{ request()->routeIs('returns.*') ? 'active' : '' }}" href="{{ route('returns.index') }}"><span class="nav-icon">↩</span>Sales Returns</a>@endif
         @if(auth()->user()->hasPermission('settings.manage'))<a class="{{ request()->routeIs('settings') ? 'active' : '' }}" href="{{ route('settings') }}"><span class="nav-icon">⚙</span>Settings</a>@endif
         @if(auth()->user()->hasPermission('users.view'))<a class="{{ request()->routeIs('users.*') ? 'active' : '' }}" href="{{ route('users.index') }}"><span class="nav-icon">♙</span>Users</a>@endif

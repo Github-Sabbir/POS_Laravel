@@ -49,3 +49,20 @@ async function checkoutPOS(){
   window.addEventListener('blur',()=>document.body.classList.remove('cursor-hover','cursor-down'));
   window.addEventListener('mouseleave',()=>document.body.classList.remove('cursor-hover','cursor-down'));
 })();
+
+// Login orbit interaction: each ring gets a random accent while the user types or hovers.
+(function(){
+  const page=document.querySelector('.login-animated-page');
+  if(!page)return;
+  const rings=[...page.querySelectorAll('.login-orbit')];
+  const colors=['#a7ff3f','#62e7ff','#ff5fa2','#ffe16b','#b58cff','#6fffd1','#ff8a5c'];
+  const randomize=()=>rings.forEach((ring,i)=>{const c=colors[Math.floor(Math.random()*colors.length)];ring.style.setProperty('--orbit-color',c);ring.style.setProperty('--orbit-glow',c+'66');ring.style.borderColor=c;});
+  const reset=()=>rings.forEach(r=>{r.style.borderColor='rgba(255,255,255,.86)';r.style.removeProperty('--orbit-color');r.style.removeProperty('--orbit-glow')});
+  page.querySelectorAll('.animated-field input').forEach(input=>{
+    input.addEventListener('input',()=>{randomize();page.classList.add('login-input-active');});
+    input.addEventListener('focus',()=>{randomize();page.classList.add('login-input-active');});
+    input.addEventListener('blur',()=>page.classList.remove('login-input-active'));
+  });
+  page.addEventListener('mouseenter',()=>{randomize();page.classList.add('login-hover-active')});
+  page.addEventListener('mouseleave',()=>{page.classList.remove('login-hover-active','login-input-active');reset()});
+})();

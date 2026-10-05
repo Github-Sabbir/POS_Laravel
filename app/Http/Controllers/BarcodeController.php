@@ -45,13 +45,19 @@ class BarcodeController extends Controller
     }
     public function destroy(ProductBarcode $barcode)
     {
-        if ($barcode->is_primary && ProductBarcode::where('product_id', $barcode->product_id)->count() > 1) {
-            return back()->withErrors(['barcode' => 'Set another barcode as primary before deleting this one.']);
-        }
-        if (ProductBarcode::where('product_id', $barcode->product_id)->count() === 1 && $barcode->is_primary) {
-            return back()->withErrors(['barcode' => 'A product must keep at least one barcode. Add another barcode before deleting the primary one.']);
-        }
+        $productId = $barcode->product_id;
+        $wasPrimary = (bool) $barcode->is_primary;
+
         $barcode->delete();
-        return back()->with('success', 'Barcode deleted.');
+
+        // If the deleted barcode was primary, promote the oldest remaining barcode.
+        if ($wasPrimary) {
+            $replacement = ProductBarcode::where('product_id', $productId)->oldest('id')->first();
+            if ($replacement) {
+                $replacement->update(['is_primary' => true]);
+            }
+        }
+
+        return back()->with('success', 'Barcode deleted successfully.');
     }
 }

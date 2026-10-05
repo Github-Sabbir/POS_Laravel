@@ -67,7 +67,7 @@
 (() => {
  const rows=document.getElementById('purchaseRows'),add=document.getElementById('addPurchaseRow'); if(!rows||!add)return;
  let index=rows.querySelectorAll('.purchase-row').length;
- const productOptions=@json($products->map(fn($p)=>['id'=>$p->id,'name'=>$p->name,'sku'=>$p->sku,'cost'=>$p->purchase_price])->values());
+ const productOptions={{ Illuminate\Support\Js::from($products->map(fn($p)=>['id'=>$p->id,'name'=>$p->name,'sku'=>$p->sku,'cost'=>$p->purchase_price])->values()) }};
  const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
  const optionHtml=()=>'<option value="">Select product</option>'+productOptions.map(p=>`<option value="${p.id}" data-cost="${p.cost}">${esc(p.name)} — ${esc(p.sku)}</option>`).join('');
  function bind(row){const sel=row.querySelector('.purchase-product'),cost=row.querySelector('.purchase-cost');sel?.addEventListener('change',()=>{const o=sel.options[sel.selectedIndex];if(o?.dataset.cost&&(!cost.value||cost.value==='0'))cost.value=o.dataset.cost;update()});row.querySelectorAll('input').forEach(i=>i.addEventListener('input',update));row.querySelector('.icon-remove-row')?.addEventListener('click',()=>{if(rows.children.length===1){sel.value='';cost.value='0'}else row.remove();update()})}
