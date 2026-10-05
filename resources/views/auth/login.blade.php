@@ -16,7 +16,7 @@
         <div class="login-orbit login-orbit-d" aria-hidden="true"></div>
         <div class="animated-login-content">
             @php($loginLogo = \App\Models\Setting::where('key','logo_path')->value('value'))
-            @if($loginLogo)<div class="login-setting-logo"><img src="{{ route('media.file', ['path' => $loginLogo]) }}" alt="Shop logo"></div>@endif
+            @if($loginLogo)<div class="login-setting-logo"><img src="{{ route('media.file', ['path' => $loginLogo]) }}" alt="Shop logo" onerror="this.closest('.login-setting-logo').remove()"></div>@endif
             @if($errors->any())<div class="login-error" role="alert">{{ $errors->first() }}</div>@endif
             <form method="post" action="{{ route('login.store') }}" autocomplete="on" class="animated-login-form">
                 @csrf

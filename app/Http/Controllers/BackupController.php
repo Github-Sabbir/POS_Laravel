@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
 class BackupController extends Controller
 {
-    public function download(): Response
+    public function download(): StreamedResponse
     {
         $filename = 'retail_pos_backup_' . now()->format('Y-m-d_H-i-s') . '.sql';
 
