@@ -14,10 +14,13 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\MediaController;
+use App\Http\Controllers\BackupController;
 Route::get('/', fn() => redirect()->route('dashboard'));
 Route::get('/login', [AuthController::class, 'show'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.store');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/media/{path}', [MediaController::class, 'file'])->where('path', '.*')->name('media.file');
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::middleware('permission:pos.access')->group(function () {
@@ -43,7 +46,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/barcodes/bulk-generate', [BarcodeController::class, 'bulkGenerate'])->name('barcodes.bulk');
         Route::delete('/barcodes/{barcode}', [BarcodeController::class, 'destroy'])->name('barcodes.destroy');
     });
-    Route::middleware('permission:purchases.manage')->resource('purchases', PurchaseController::class)->only(['index', 'create', 'store', 'show']);
+    Route::middleware('permission:purchases.manage')->resource('purchases', PurchaseController::class)->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy']);
     Route::middleware('permission:customers.view')->group(function () {
         Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
         Route::get('/customers/{customer}/edit', [CustomerController::class, 'edit'])->name('customers.edit');
@@ -81,6 +84,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
         Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
         Route::post('/settings/logo/remove', [SettingsController::class, 'removeLogo'])->name('settings.logo.remove');
+        Route::get('/settings/backup', [BackupController::class, 'download'])->middleware('permission:backup.manage')->name('settings.backup.download');
     });
     Route::middleware('permission:users.view')->get('/users', [UserManagementController::class, 'index'])->name('users.index');
     Route::middleware('permission:users.create')->group(function () {

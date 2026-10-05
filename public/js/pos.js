@@ -42,8 +42,10 @@ async function checkoutPOS(){
   function tick(){rx+=(x-rx)*.22;ry+=(y-ry)*.22;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(tick)}
   tick();
   document.addEventListener('mousedown',()=>document.body.classList.add('cursor-down'));
+  document.addEventListener('click',()=>{document.body.classList.add('cursor-click');setTimeout(()=>document.body.classList.remove('cursor-click'),180)});
   document.addEventListener('mouseup',()=>document.body.classList.remove('cursor-down'));
   document.addEventListener('mouseleave',()=>{inside=false;document.body.classList.remove('cursor-hover','cursor-down')});
   document.addEventListener('mouseenter',()=>{inside=true});
   window.addEventListener('blur',()=>document.body.classList.remove('cursor-hover','cursor-down'));
+  window.addEventListener('mouseleave',()=>document.body.classList.remove('cursor-hover','cursor-down'));
 })();

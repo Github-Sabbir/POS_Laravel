@@ -12,7 +12,7 @@
     <div class="brand">
         @php($logoPath = \App\Models\Setting::where('key', 'logo_path')->value('value'))
         @if($logoPath)
-            <img class="brand-logo" src="{{ asset('storage/'.$logoPath) }}" alt="Logo">
+            <img class="brand-logo" src="{{ route('media.file', ['path' => $logoPath]) }}" alt="Logo">
         @else
             <span class="brand-mark">R</span>
         @endif
