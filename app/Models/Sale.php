@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+class Sale extends Model
+{
+    protected $fillable = ['invoice_no', 'customer_id', 'user_id', 'subtotal', 'discount', 'tax', 'total', 'paid', 'due', 'change', 'payment_method', 'status'];
+    protected $casts = ['subtotal' => 'decimal:2', 'discount' => 'decimal:2', 'tax' => 'decimal:2', 'total' => 'decimal:2', 'paid' => 'decimal:2', 'due' => 'decimal:2', 'change' => 'decimal:2'];
+    public function items()
+    {
+        return $this->hasMany(SaleItem::class);
+    }
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+}
