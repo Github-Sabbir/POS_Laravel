@@ -19,7 +19,7 @@ class PurchaseController extends Controller
     {
         return view('purchases.form', [
             'purchase' => new Purchase(),
-            'products' => Product::where('status', 'active')->get(),
+            'products' => Product::withTrashed()->where('status', 'active')->get(),
             'suppliers' => Supplier::where('status', 'active')->get(),
         ]);
     }
@@ -58,7 +58,7 @@ class PurchaseController extends Controller
         $purchase->load('items');
         return view('purchases.form', [
             'purchase' => $purchase,
-            'products' => Product::where('status', 'active')->orWhereIn('id', $purchase->items->pluck('product_id'))->get()->unique('id')->values(),
+            'products' => Product::withTrashed()->where('status', 'active')->orWhereIn('id', $purchase->items->pluck('product_id'))->get()->unique('id')->values(),
             'suppliers' => Supplier::where('status', 'active')->orWhere('id', $purchase->supplier_id)->get(),
         ]);
     }

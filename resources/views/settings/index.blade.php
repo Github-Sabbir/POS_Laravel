@@ -12,4 +12,12 @@
 @if(auth()->user()->hasPermission('backup.manage'))
 <section class="glass backup-card backup-card-stack"><div><h2>Database Backup & Restore</h2><p class="muted">Download a native MySQL <strong>.sql</strong> backup. If the database is deleted or damaged, an Admin can upload that SQL file here and restore the database.</p></div><div class="backup-actions"><a class="secondary" href="{{ route('settings.backup.download') }}">⬇ Download MySQL Backup (.sql)</a><form method="post" action="{{ route('settings.backup.restore') }}" enctype="multipart/form-data" onsubmit="return confirm('Restore this SQL backup? Current database data may be replaced. Continue?')"><input type="hidden" name="_token" value="{{ csrf_token() }}"><input type="file" name="backup" accept=".sql,.txt" required><button class="danger" type="submit">↥ Restore Database</button></form></div><p class="backup-warning">⚠ Restore is Admin-only and should only use a backup generated for this Retail POS MySQL database.</p></section>
 @endif
+
+@if(auth()->user()->role === 'admin')
+<section class="glass backup-card backup-card-stack factory-reset-card">
+    <div><h2>Factory Reset</h2><p class="muted">Reset the whole POS to a clean default state. All products, customers, suppliers, purchases, sales, expenses, settings and other business data will be permanently removed.</p></div>
+    <form method="post" action="{{ route('settings.factory-reset') }}" onsubmit="return confirm('FACTORY RESET: This will permanently delete all business data and restore the default Admin, Cashier, roles and permissions. Continue?')">@csrf<button class="danger" type="submit">Factory Reset App</button></form>
+    <p class="backup-warning">Admin only. After reset you will be returned to Login.</p>
+</section>
+@endif
 @endsection

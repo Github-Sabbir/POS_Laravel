@@ -14,7 +14,7 @@ class PosController extends Controller
     {
         return view('pos.index', [
             'customers' => Customer::where('status', 'active')->orderBy('name')->get(),
-            'products' => Product::with('barcodes')->where('status', 'active')->orderBy('name')->limit(200)->get(),
+            'products' => Product::with('barcodes')->where('status', 'active')->where('current_stock', '>', 0)->orderBy('name')->limit(200)->get(),
         ]);
     }
     public function receipt(Sale $sale)
@@ -30,11 +30,13 @@ class PosController extends Controller
         $query = trim($query);
         $exact = Product::with('barcodes')
             ->where('status', 'active')
+            ->where('current_stock', '>', 0)
             ->where(fn($q) => $q->where('sku', $query)->orWhereHas('barcodes', fn($b) => $b->where('barcode', $query)))
             ->first();
 
         $suggestions = Product::with('barcodes')
             ->where('status', 'active')
+            ->where('current_stock', '>', 0)
             ->where(fn($q) => $q->where('name', 'like', "%{$query}%")
                 ->orWhere('sku', 'like', "%{$query}%")
                 ->orWhereHas('barcodes', fn($b) => $b->where('barcode', 'like', "%{$query}%")))

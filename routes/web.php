@@ -19,6 +19,7 @@ use App\Http\Controllers\BackupController;
 use App\Http\Controllers\SalesHistoryController;
 use App\Http\Controllers\OutOfStockController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\FactoryResetController;
 Route::get('/', fn() => redirect()->route('dashboard'));
 Route::get('/login', [AuthController::class, 'show'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login.store');
@@ -90,6 +91,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:receipts.print')->get('/sales/{sale}/receipt', [PosController::class, 'receipt'])->name('sales.receipt');
     Route::get('/sales-history', [SalesHistoryController::class, 'index'])->name('sales.history');
     Route::middleware('permission:settings.manage')->group(function () {
+        Route::post('/settings/factory-reset', [FactoryResetController::class, 'reset'])->name('settings.factory-reset');
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
         Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
         Route::post('/settings/logo/remove', [SettingsController::class, 'removeLogo'])->name('settings.logo.remove');
