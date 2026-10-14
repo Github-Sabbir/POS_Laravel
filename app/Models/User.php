@@ -7,7 +7,7 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
     use Notifiable;
-    protected $fillable = ['name', 'email', 'phone', 'whatsapp', 'image', 'address', 'password', 'role', 'role_id', 'active'];
+    protected $fillable = ['name', 'login_id', 'email', 'phone', 'whatsapp', 'image', 'address', 'password', 'role', 'role_id', 'active'];
     protected $hidden = ['password', 'remember_token'];
     protected $casts = ['active' => 'boolean', 'password' => 'hashed'];
     public function roleModel()

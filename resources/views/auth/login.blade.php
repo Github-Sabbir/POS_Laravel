@@ -21,7 +21,7 @@
             @if($errors->any())<div class="login-error" role="alert">{{ $errors->first() }}</div>@endif
             <form method="post" action="{{ route('login.store') }}" autocomplete="on" class="animated-login-form">
                 @csrf
-                <label class="animated-field"><span>Username / Email</span><input type="email" name="email" value="{{ old('email') }}" autocomplete="username" placeholder="Enter your email" required autofocus></label>
+                <label class="animated-field"><span>Login ID / Email</span><input type="text" name="identifier" value="{{ old('identifier') }}" autocomplete="username" placeholder="Enter Login ID or email" required autofocus></label>
                 <label class="animated-field"><span>Password</span><input type="password" name="password" autocomplete="current-password" placeholder="Enter your password" required></label>
                 <button class="animated-login-button" type="submit"><span>Sign in</span></button>
             </form>

@@ -388,3 +388,116 @@ a.app-page:hover{border-color:rgba(167,255,63,.35);background:rgba(167,255,63,.0
 .app-page[aria-label="Previous page"],.app-page[aria-label="Next page"]{font-size:22px;font-weight:500}
 .light .app-page{background:rgba(255,255,255,.78);color:var(--text)}
 @media(max-width:650px){.app-pagination{align-items:stretch;flex-direction:column;gap:10px}.app-pagination-links{width:100%;justify-content:center}.app-page{min-width:36px;height:36px}}
+
+
+/* v21: final responsive + print reliability layer */
+html{min-width:0}
+body:not(.login-animated-page){min-width:0}
+main,.page,.page-head,.glass,.card,.form-card,.toolbar,.table-wrap,.pos-shell,.pos-products,.cart-panel{min-width:0}
+button,.primary,.secondary,.danger,.quick a,.link,.danger-link{max-width:100%;box-sizing:border-box}
+.actions form{min-width:0}
+.actions button,.actions a{white-space:normal;text-align:center}
+.page-actions{gap:10px}
+.page-actions>a,.page-actions>button,.actions>a,.actions>form>button{flex:0 1 auto}
+.topbar{min-width:0}
+.top-brand{min-width:0}
+.top-brand strong{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.top-actions{min-width:0}
+.top-user{min-width:0}
+.top-user>span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.table-wrap{max-width:100%;-webkit-overflow-scrolling:touch}
+.table-wrap table{min-width:620px}
+.form-grid>*{min-width:0}
+input,select,textarea{min-width:0;max-width:100%}
+img{max-width:100%}
+
+@media(max-width:900px){
+  .sidebar{width:258px;left:10px}
+  .topbar{height:64px;padding:0 14px}
+  .page{padding:20px 14px}
+  .page-head{align-items:flex-start;flex-direction:column;gap:12px}
+  .page-head>div{min-width:0;width:100%}
+  .page-head>.primary,.page-head>.secondary,.page-head>button{width:100%}
+  .page-head h1{font-size:27px}
+  .toolbar{align-items:stretch}
+  .toolbar>*{min-width:0}
+  .toolbar input{width:100%}
+  .actions{width:100%}
+  .actions>a,.actions>form{flex:1 1 150px}
+  .actions>form>button{width:100%}
+}
+
+@media(max-width:650px){
+  .topbar{height:58px;padding:0 10px;gap:8px}
+  .icon-btn,.theme-btn{width:36px;height:36px;border-radius:11px}
+  .top-brand{gap:6px}
+  .top-brand img{width:25px;height:25px}
+  .top-brand strong{font-size:13px;max-width:115px}
+  .top-actions{gap:5px}
+  .top-user{padding:4px;border-radius:10px}
+  .avatar{width:28px;height:28px}
+  .page{padding:16px 10px}
+  .page-head{margin-bottom:16px}
+  .page-head h1{font-size:24px;letter-spacing:-.6px}
+  .page-head p{font-size:12px;line-height:1.45}
+  .stats{gap:10px}
+  .stat{padding:15px;min-height:105px}
+  .stat b{font-size:22px;margin-top:12px}
+  .stat small{font-size:11px}
+  .card,.form-card,.settings-card,.profile-info-panel{padding:15px}
+  .glass,.stat,.card,.table-wrap,.toolbar,.pos-products,.cart-panel{border-radius:17px}
+  .quick,.page-actions,.settings-actions{display:grid;grid-template-columns:1fr;width:100%}
+  .quick>a,.page-actions>a,.page-actions>button,.settings-actions>*{width:100%;min-width:0}
+  .actions{display:grid;grid-template-columns:1fr;width:100%;gap:7px}
+  .actions>a,.actions>form,.actions>button{width:100%}
+  .actions>form>button{width:100%}
+  .purchase-payment-row{display:grid;grid-template-columns:1fr}
+  .purchase-payment-row label{min-width:0}
+  .permission-toolbar{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .permission-toolbar strong{grid-column:1/-1;width:auto}
+  .permission-toolbar button{width:100%}
+  .role-card,.role-create-card{padding:15px}
+  .role-card-head{gap:10px}
+  .role-summary{align-self:stretch;text-align:center}
+  .report-filter{padding:12px}
+  .report-filter button,.report-filter a{width:100%}
+  .report-stats .stat{min-height:105px}
+  .backup-card-stack{padding:15px}
+  .login-setting-logo img{width:48px;height:48px}
+}
+
+/* Reports: dedicated print canvas so browser print settings cannot inherit dark/glass styling. */
+@media print{
+  @page{size:auto;margin:12mm}
+  html,body{background:#fff!important;color:#111!important;min-height:0!important}
+  body{font-family:Arial,Helvetica,sans-serif!important;font-size:11pt!important}
+  body:not(.login-animated-page){overflow:visible!important}
+  body:not(.login-animated-page)::before,
+  body:not(.login-animated-page)::after{display:none!important}
+  .sidebar,.topbar,.toast,.page-head>.secondary,.page-head>button,.report-filter,
+  .no-print,.actions,.quick,.page-actions{display:none!important}
+  main{margin:0!important;min-height:0!important;background:#fff!important}
+  .page{max-width:none!important;padding:0!important;margin:0!important}
+  .page-head{display:block!important;margin:0 0 10mm!important}
+  .page-head h1{color:#111!important;font-size:22pt!important}
+  .page-head p,.eyebrow{color:#444!important}
+  .glass,.stat,.card,.table-wrap,.report-grid>.glass{
+    background:#fff!important;color:#111!important;border:1px solid #bbb!important;
+    box-shadow:none!important;backdrop-filter:none!important;overflow:visible!important;
+  }
+  .glass:after,.stat:after,.card:after{display:none!important}
+  .report-stats{display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:4mm!important}
+  .report-stats .stat{min-height:auto!important;padding:4mm!important}
+  .report-stats .stat b,.report-stats .stat span,.report-stats .stat small,
+  .report-grid h2,.report-grid p,.report-grid th,.report-grid td,
+  .section-head,.muted{color:#111!important;opacity:1!important}
+  .report-stats .stat b{font-size:14pt!important}
+  .report-grid{display:block!important}
+  .report-grid>.glass{margin:5mm 0!important;page-break-inside:avoid}
+  .table-wrap{overflow:visible!important}
+  .table-wrap table{width:100%!important;min-width:0!important;table-layout:auto!important}
+  th,td{white-space:normal!important;color:#111!important;background:#fff!important;border-bottom:1px solid #bbb!important;padding:2.5mm!important}
+  th{font-weight:700!important}
+  tr,thead,tbody{break-inside:avoid}
+  a{color:#111!important;text-decoration:none!important}
+}

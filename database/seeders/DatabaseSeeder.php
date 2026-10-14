@@ -86,11 +86,11 @@ class DatabaseSeeder extends Seeder
 
         // Factory/default reset accounts. No demo products, customers, suppliers or transactions.
         User::updateOrCreate(['email' => 'admin@example.com'], [
-            'name' => 'Administrator', 'password' => 'password', 'role' => 'admin', 'role_id' => $admin->id, 'active' => true,
+            'name' => 'Administrator', 'login_id' => 'MdAbdulAlimSabbir', 'password' => 'MdAbdulAlimSabbir', 'role' => 'admin', 'role_id' => $admin->id, 'active' => true,
             'phone' => null, 'whatsapp' => null, 'image' => null, 'address' => null,
         ]);
         User::updateOrCreate(['email' => 'cashier@example.com'], [
-            'name' => 'Cashier', 'password' => 'password', 'role' => 'cashier', 'role_id' => $cashier->id, 'active' => true,
+            'name' => 'Cashier', 'login_id' => 'Cashier', 'password' => 'password', 'role' => 'cashier', 'role_id' => $cashier->id, 'active' => true,
             'phone' => null, 'whatsapp' => null, 'image' => null, 'address' => null,
         ]);
 

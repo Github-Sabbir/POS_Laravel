@@ -21,9 +21,9 @@ class UserManagementController extends Controller
     }
     public function store(Request $request)
     {
-        $data = $request->validate(['name' => 'required|string|max:120', 'email' => 'required|email|max:190|unique:users,email', 'phone' => 'nullable|string|max:50', 'whatsapp' => 'nullable|string|max:50', 'address' => 'nullable|string|max:2000', 'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048', 'password' => 'required|string|min:6|confirmed', 'role_id' => 'required|exists:roles,id', 'active' => 'nullable|boolean']);
+        $data = $request->validate(['name' => 'required|string|max:120', 'login_id' => 'required|string|max:190|unique:users,login_id', 'email' => 'required|email|max:190|unique:users,email', 'phone' => 'nullable|string|max:50', 'whatsapp' => 'nullable|string|max:50', 'address' => 'nullable|string|max:2000', 'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048', 'password' => 'required|string|min:6|confirmed', 'role_id' => 'required|exists:roles,id', 'active' => 'nullable|boolean']);
         $role = Role::findOrFail($data['role_id']);
-        $payload = ['name' => $data['name'], 'email' => $data['email'], 'phone' => $data['phone'] ?? null, 'whatsapp' => $data['whatsapp'] ?? null, 'address' => $data['address'] ?? null, 'password' => $data['password'], 'role' => $role->slug, 'role_id' => $role->id, 'active' => $request->boolean('active', true)];
+        $payload = ['name' => $data['name'], 'login_id' => trim($data['login_id']), 'email' => $data['email'], 'phone' => $data['phone'] ?? null, 'whatsapp' => $data['whatsapp'] ?? null, 'address' => $data['address'] ?? null, 'password' => $data['password'], 'role' => $role->slug, 'role_id' => $role->id, 'active' => $request->boolean('active', true)];
         if ($request->hasFile('image')) { $payload['image'] = $request->file('image')->store('users', 'public'); }
         $user = User::create($payload);
         return redirect()->route('users.index')->with('success', 'User created successfully.');
@@ -34,7 +34,7 @@ class UserManagementController extends Controller
     }
     public function update(Request $request, User $user)
     {
-        $data = $request->validate(['name' => 'required|string|max:120', 'email' => 'required|email|max:190|unique:users,email,' . $user->id, 'phone' => 'nullable|string|max:50', 'whatsapp' => 'nullable|string|max:50', 'address' => 'nullable|string|max:2000', 'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048', 'password' => 'nullable|string|min:6|confirmed', 'role_id' => 'required|exists:roles,id', 'active' => 'nullable|boolean']);
+        $data = $request->validate(['name' => 'required|string|max:120', 'login_id' => 'required|string|max:190|unique:users,login_id,' . $user->id, 'email' => 'required|email|max:190|unique:users,email,' . $user->id, 'phone' => 'nullable|string|max:50', 'whatsapp' => 'nullable|string|max:50', 'address' => 'nullable|string|max:2000', 'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048', 'password' => 'nullable|string|min:6|confirmed', 'role_id' => 'required|exists:roles,id', 'active' => 'nullable|boolean']);
         if ($user->id === $request->user()->id && !$request->boolean('active', true)) {
             return back()->withErrors(['active' => 'You cannot deactivate your own account.']);
         }
@@ -42,7 +42,7 @@ class UserManagementController extends Controller
         if ($user->role === 'admin' && $role->slug !== 'admin' && User::where('role', 'admin')->where('active', true)->count() <= 1) {
             return back()->withErrors(['role' => 'The last active admin cannot lose admin access.']);
         }
-        $payload = ['name' => $data['name'], 'email' => $data['email'], 'phone' => $data['phone'] ?? null, 'whatsapp' => $data['whatsapp'] ?? null, 'address' => $data['address'] ?? null, 'role' => $role->slug, 'role_id' => $role->id, 'active' => $request->boolean('active', true)];
+        $payload = ['name' => $data['name'], 'login_id' => trim($data['login_id']), 'email' => $data['email'], 'phone' => $data['phone'] ?? null, 'whatsapp' => $data['whatsapp'] ?? null, 'address' => $data['address'] ?? null, 'role' => $role->slug, 'role_id' => $role->id, 'active' => $request->boolean('active', true)];
         if (!empty($data['password'])) { $payload['password'] = $data['password']; }
         if ($request->hasFile('image')) {
             if ($user->image) { \Illuminate\Support\Facades\Storage::disk('public')->delete($user->image); }

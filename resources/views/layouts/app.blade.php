@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     @php($shopName = \App\Models\Setting::where('key', 'shop_name')->value('value') ?: 'Retail POS')
     <title>{{ $title ?? $shopName }}</title>
-    <link rel="stylesheet" href="{{ asset('css/pos.css') }}?v=20">
+    <link rel="stylesheet" href="{{ asset('css/pos.css') }}?v=21">
 </head>
 <body>
 <aside class="sidebar">
@@ -44,7 +44,7 @@
 @if($errors->any())<div class="toast error">{{ $errors->first() }}</div>@endif
 <div class="page">@yield('content')</div>
 </main>
-<script src="{{ asset('js/pos.js') }}?v=20"></script>
+<script src="{{ asset('js/pos.js') }}?v=21"></script>
 @stack('scripts')
 </body>
 </html>
